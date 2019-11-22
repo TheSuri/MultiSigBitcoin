@@ -348,10 +348,7 @@ $(document).ready(function() {
 	});
 
 	$("#newKeysBtn2").click(function(){
-		coinjs.compressed = false;
-		if($("#newCompressed").is(":checked")){
-			coinjs.compressed = true;
-		}
+		coinjs.compressed = true;
 		var s = null;
 		console.log("AAA")
 		var coin1 = coinjs.newKeys(s);
