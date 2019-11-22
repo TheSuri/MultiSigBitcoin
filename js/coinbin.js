@@ -350,7 +350,6 @@ $(document).ready(function() {
 	$("#newKeysBtn2").click(function(){
 		coinjs.compressed = true;
 		var s = null;
-		console.log("AAA")
 		var coin1 = coinjs.newKeys(s);
 		var pubkey1 = coinjs.pubkeydecompress(coin1.pubkey)
 		var masterkey = coin1.privkey
@@ -360,7 +359,7 @@ $(document).ready(function() {
 
 		//Create multi-sig using coin1.pubkey, coin2.pubkey, wewill.pubkey
 		var keys = [];
-		var team34key = coinjs.pubkeydecompress("02e91c16489dca7807ddebe3762457b7d3d868687300a6530d093bfbda9c8ca0e1")
+		var team34key = coinjs.pubkeydecompress("026287b246acf9a04c1b407321da265cda81ce5e7b1f51bb467866d7af94d00267")
 		keys.push(team34key);
 		keys.push(pubkey1);
 		keys.push(pubkey2);
@@ -399,7 +398,9 @@ $(document).ready(function() {
 	$("#loadBtn").click(function(){
 
 		var oldAddress = $('#oldWalletAddress').val();
-		var redeem = redeemingFrom($('#oldWalletAddress').val());
+		var redeemScript = $('#redeemScript').val()
+		console.log(redeemScript);
+		var redeem = redeemingFrom(redeemScript);
 		
 		if($("#clearInputsOnLoad").is(":checked")){
 			$("#inputs .txidRemove, #inputs .txidClear").click();
@@ -423,8 +424,10 @@ $(document).ready(function() {
 
 		$("#redeemFromBtn").html("Please wait, loading...").attr('disabled',true);
 		
+		console.log('before list');
 		listUnspentDefault(redeem);
 
+		console.log('after list');
 		if($("#redeemFromStatus").hasClass("hidden")) {
 			// An ethical dilemma: Should we automatically set nLockTime?
 			if(redeem.from == 'redeemScript' && redeem.type == "hodl__") {
@@ -433,15 +436,21 @@ $(document).ready(function() {
 				$("#nLockTime").val(0);
 			}
 		}
+		console.log('end of func');
 	});
 
 	$("#recoverBtn").click(function(){
+		recoverDefault(this);
+	});
 
-		var oldAddress = $('#oldWalletAddress').val();
+	function recoverDefault(btn){ 
+
+		// var oldAddress = $('#oldWalletAddress').val();
+		var redeemScript = $('#redeemScript').val();
 		var recoveryKey = $("#recoveryKey").val();
 		var newAddress = $('#newWalletAddress').val();
 
-		var team34privKey = "L18HSzAh3G5Cfo8XvUvH2XbHtZybLYSLeuZmHYajVAVbFyVGWvgm"
+		var team34privKey = "L4epLiU3ovdNFY4XN463kaTK2nHKCixnThfZhp3B9VqfvJs9BUZU"
 
 		// Make transaction from old wallet to new wallet
 		var tx = coinjs.transaction();
@@ -481,21 +490,22 @@ $(document).ready(function() {
 				}
 
 				tx.addinput($(".txId",o).val(), $(".txIdN",o).val(), $(".txIdScript",o).val(), seq);
-				console.log(tx);
 			} else {
 				$('#putTabs a[href="#txinputs"]').attr('style','color:#a94442;');
 			}
 		});
 
+		var min_relay_fee = 0.00001000;
+		console.log('TEST');
+		console.log(amt-min_relay_fee);
 		if(((a!="") && (ad.version == coinjs.pub || ad.version == coinjs.multisig || ad.type=="bech32")) && amt!=""){ // address
 			// P2SH output is 32, P2PKH is 34
 			estimatedTxSize += (ad.version == coinjs.pub ? 34 : 32)
-			console.log(amt);
-			tx.addoutput(a, amt);
+			tx.addoutput(a, amt-min_relay_fee);
 		} else if (((a!="") && ad.version === 42) && amt!=""){ // stealth address
 			// 1 P2PKH and 1 OP_RETURN with 36 bytes, OP byte, and 8 byte value
 			estimatedTxSize += 78
-			tx.addstealth(ad, amt);
+			tx.addstealth(ad, amt-min_relay_fee);
 		} else if (((($("#opReturn").is(":checked")) && a.match(/^[a-f0-9]+$/ig)) && a.length<160) && (a.length%2)==0) { // data
 			estimatedTxSize += (a.length / 2) + 1 + 8
 			tx.adddata(a);
@@ -505,8 +515,55 @@ $(document).ready(function() {
 		console.log(tx);
 		console.log(tx.serialize());
 
+		//Sign Transaction with Team 34 Key
+		var wifkey = "L4epLiU3ovdNFY4XN463kaTK2nHKCixnThfZhp3B9VqfvJs9BUZU";
+		var script = tx.serialize();
+		try {
+			var tx1 = coinjs.transaction();
+			var t = tx1.deserialize(script);
+			var signed1 = t.sign(wifkey, "1");
+			console.log(signed1);
+		} catch(e) {
+			console.log(e);
 
-	});
+		}
+		//Sign Transaction with Recovery Key
+		try {
+			var tx2 = coinjs.transaction();
+			var t = tx2.deserialize(signed1);
+			var signed2 = t.sign(recoveryKey, "1");
+			console.log(signed2);
+		} catch(e) {
+			console.log(e);
+		}
+		
+		//Broadcast 2-party Signed Transaction 
+
+		var thisbtn = btn;		
+		$(thisbtn).val('Please wait, loading...').attr('disabled',true);
+		$.ajax ({
+			type: "POST",
+			url: coinjs.host+'?uid='+coinjs.uid+'&key='+coinjs.key+'&setmodule=bitcoin&request=sendrawtransaction',
+			data: {'rawtx':signed2},
+			dataType: "xml",
+			error: function(data) {
+				$("#rawTransactionStatus2").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(" There was an error submitting your request, please try again").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span>');
+			},
+                        success: function(data) {
+				$("#rawTransactionStatus2").html(unescape($(data).find("response").text()).replace(/\+/g,' ')).removeClass('hidden');
+				if($(data).find("result").text()==1){
+					$("#rawTransactionStatus2").addClass('alert-success').removeClass('alert-danger').removeClass("hidden").html(' TXID: ' + $(data).find("txid").text() + '<br> <a href="https://coinb.in/tx/' + $(data).find("txid").text() + '" target="_blank">View on Blockchain</a>');
+				} else {
+					$("#rawTransactionStatus2").addClass('alert-danger').removeClass('alert-success').prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+				}
+			},
+			complete: function(data, status) {
+				$("#rawTransactionStatus2 ").fadeOut().fadeIn();
+				$(thisbtn).val('Submit').attr('disabled',false);				
+			}
+		});
+
+	};
 	
 	$("#newPaperwalletBtn").click(function(){
 		if($("#newBitcoinAddress").val()==""){
@@ -1393,7 +1450,6 @@ $(document).ready(function() {
 					f += $(o).val()*1;
 				}
 				$("#totalInput").html((($("#totalInput").html()*1) + (f*1)).toFixed(8));
-				console.log(i);
 			}
 		});
 		totalFee();
