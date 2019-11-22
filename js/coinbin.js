@@ -360,7 +360,7 @@ $(document).ready(function() {
 
 		//Create multi-sig using coin1.pubkey, coin2.pubkey, wewill.pubkey
 		var keys = [];
-		team34key = coinjs.pubkeydecompress("02e91c16489dca7807ddebe3762457b7d3d868687300a6530d093bfbda9c8ca0e1")
+		var team34key = coinjs.pubkeydecompress("02e91c16489dca7807ddebe3762457b7d3d868687300a6530d093bfbda9c8ca0e1")
 		keys.push(team34key);
 		keys.push(pubkey1);
 		keys.push(pubkey2);
@@ -393,6 +393,90 @@ $(document).ready(function() {
 			$("#aes256passStatus").removeClass("hidden");
 		}
 		$("#newPrivKeyEnc").val(CryptoJS.AES.encrypt(coin1.wif, $("#aes256pass").val())+'');
+	});
+
+	$("#recoverBtn").click(function(){
+
+		var oldAddress = $('#oldWalletAddress').val();
+		var recoveryKey = $("#recoveryKey").val();
+		var newAddress = $('#newWalletAddress').val();
+
+		var team34privKey = "L18HSzAh3G5Cfo8XvUvH2XbHtZybLYSLeuZmHYajVAVbFyVGWvgm"
+
+		var redeem = redeemingFrom($('#oldWalletAddress').val());
+		
+		if($("#clearInputsOnLoad").is(":checked")){
+			$("#inputs .txidRemove, #inputs .txidClear").click();
+		}
+		
+		listUnspentDefault(redeem);
+
+		// Make transaction from old wallet to new wallet
+		var tx = coinjs.transaction();
+		var estimatedTxSize = 10;
+
+		var a = newAddress;
+		var ad = coinjs.addressDecode(a);
+		var amt = $('#totalInput').html();
+		console.log(amt);
+
+		$("#inputs .row").removeClass('has-error');
+
+		$('#putTabs a[href="#txinputs"], #putTabs a[href="#txoutputs"]').attr('style','');
+
+		$.each($("#inputs .row"), function(i,o){
+			if(!($(".txId",o).val()).match(/^[a-f0-9]+$/i)){
+				$(o).addClass("has-error");
+			} else if((!($(".txIdScript",o).val()).match(/^[a-f0-9]+$/i)) && $(".txIdScript",o).val()!=""){
+				$(o).addClass("has-error");
+			} else if (!($(".txIdN",o).val()).match(/^[0-9]+$/i)){
+				$(o).addClass("has-error");
+			}
+
+			if(!$(o).hasClass("has-error")){
+				var seq = null;
+				if($("#txRBF").is(":checked")){
+					seq = 0xffffffff-2;
+				}
+
+				var currentScript = $(".txIdScript",o).val();
+				if (currentScript.match(/^76a914[0-9a-f]{40}88ac$/)) {
+					estimatedTxSize += 147
+				} else if (currentScript.match(/^5[1-9a-f](?:210[23][0-9a-f]{64}){1,15}5[1-9a-f]ae$/)) {
+					// <74:persig <1:push><72:sig><1:sighash> ><34:perpubkey <1:push><33:pubkey> > <32:prevhash><4:index><4:nSequence><1:m><1:n><1:OP>
+					var scriptSigSize = (parseInt(currentScript.slice(1,2),16) * 74) + (parseInt(currentScript.slice(-3,-2),16) * 34) + 43
+					// varint 2 bytes if scriptSig is > 252
+					estimatedTxSize += scriptSigSize + (scriptSigSize > 252 ? 2 : 1)
+				} else {
+					// underestimating won't hurt. Just showing a warning window anyways.
+					estimatedTxSize += 147
+				}
+
+				tx.addinput($(".txId",o).val(), $(".txIdN",o).val(), $(".txIdScript",o).val(), seq);
+				console.log(tx);
+			} else {
+				$('#putTabs a[href="#txinputs"]').attr('style','color:#a94442;');
+			}
+		});
+
+		if(((a!="") && (ad.version == coinjs.pub || ad.version == coinjs.multisig || ad.type=="bech32")) && amt!=""){ // address
+			// P2SH output is 32, P2PKH is 34
+			estimatedTxSize += (ad.version == coinjs.pub ? 34 : 32)
+			tx.addoutput(a, amt);
+		} else if (((a!="") && ad.version === 42) && amt!=""){ // stealth address
+			// 1 P2PKH and 1 OP_RETURN with 36 bytes, OP byte, and 8 byte value
+			estimatedTxSize += 78
+			tx.addstealth(ad, amt);
+		} else if (((($("#opReturn").is(":checked")) && a.match(/^[a-f0-9]+$/ig)) && a.length<160) && (a.length%2)==0) { // data
+			estimatedTxSize += (a.length / 2) + 1 + 8
+			tx.adddata(a);
+		} else { // neither address nor data
+			console.log('Error!!!!!')
+		}
+		console.log(tx);
+		console.log(tx.serialize());
+
+
 	});
 	
 	$("#newPaperwalletBtn").click(function(){
@@ -730,22 +814,25 @@ $(document).ready(function() {
 		});
 
 		$("#recipients .row").removeClass('has-error');
-
 		$.each($("#recipients .row"), function(i,o){
 			var a = ($(".address",o).val());
 			var ad = coinjs.addressDecode(a);
 			if(((a!="") && (ad.version == coinjs.pub || ad.version == coinjs.multisig || ad.type=="bech32")) && $(".amount",o).val()!=""){ // address
 				// P2SH output is 32, P2PKH is 34
+				console.log('A');
 				estimatedTxSize += (ad.version == coinjs.pub ? 34 : 32)
 				tx.addoutput(a, $(".amount",o).val());
 			} else if (((a!="") && ad.version === 42) && $(".amount",o).val()!=""){ // stealth address
 				// 1 P2PKH and 1 OP_RETURN with 36 bytes, OP byte, and 8 byte value
+				console.log('B');
 				estimatedTxSize += 78
 				tx.addstealth(ad, $(".amount",o).val());
 			} else if (((($("#opReturn").is(":checked")) && a.match(/^[a-f0-9]+$/ig)) && a.length<160) && (a.length%2)==0) { // data
+				console.log('C');
 				estimatedTxSize += (a.length / 2) + 1 + 8
 				tx.adddata(a);
 			} else { // neither address nor data
+				console.log('D');
 				$(o).addClass('has-error');
 				$('#putTabs a[href="#txoutputs"]').attr('style','color:#a94442;');
 			}
@@ -753,7 +840,7 @@ $(document).ready(function() {
 
 
 		if(!$("#recipients .row, #inputs .row").hasClass('has-error')){
-			
+			console.log(tx);
 			$("#transactionCreate textarea").val(tx.serialize());
 			$("#transactionCreate .txSize").html(tx.size());
 
@@ -1115,11 +1202,11 @@ $(document).ready(function() {
 
 					addOutput(tx, n, script, amount);
 				});
-			}
 
+
+			}
 			$("#redeemFromBtn").html("Load").attr('disabled',false);
 			totalInputAmount();
-
 			mediatorPayment(redeem);
 		});
 	}

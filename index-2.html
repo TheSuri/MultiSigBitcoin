@@ -51,11 +51,11 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<a href="#home" class="navbar-brand" id="homeBtn"><img src="images/coinbin.gif" style="height:25px;margin-top:-5px"></a>
+						<a href="#home" class="navbar-brand" id="homeBtn"><img src="images/tezos.png" style="height:25px;margin-top:-5px"></a>
 					</div>
 					<div class="collapse navbar-collapse">
 						<ul class="nav navbar-nav">
-							<li class="dropdown">
+							<!-- <li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span> New<b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li><a href="#newAddress" data-toggle="tab">Address</a></li>
@@ -67,14 +67,14 @@
 									<li><a href="#newTransaction" data-toggle="tab">Transaction</a></li>
 
 								</ul>
-							</li>
-							<li><a href="#verify" data-toggle="tab"><span class="glyphicon glyphicon-ok"></span> Verify</a></li>
+							</li> -->
+							<!-- <li><a href="#verify" data-toggle="tab"><span class="glyphicon glyphicon-ok"></span> Verify</a></li>
 							<li><a href="#sign" data-toggle="tab"><span class="glyphicon glyphicon-pencil"></span> Sign</a></li>
 							<li><a href="#broadcast" data-toggle="tab"><span class="glyphicon glyphicon-globe"></span> Broadcast</a></li>
 							<li><a href="#wallet" data-toggle="tab"><span class="glyphicon glyphicon-briefcase"></span> Wallet</a></li>
-							<li><a href="#about" data-toggle="tab"><span class="glyphicon glyphicon-info-sign"></span> About</a></li>
-							<li><a href="#create-multisig" data-toggle="tab"><span class="glyphicon glyphicon-info-sign"></span> create-multisig</a></li>
-							<li><a href="#recover-wallet" data-toggle="tab"><span class="glyphicon glyphicon-info-sign"></span> recover-wallet</a></li>
+							<li><a href="#about" data-toggle="tab"><span class="glyphicon glyphicon-info-sign"></span> About</a></li> -->
+							<li><a href="#create-multisig" data-toggle="tab"><span class="glyphicon glyphicon-bitcoin"></span> Create </a></li>
+							<li><a href="#recover-wallet" data-toggle="tab"><span class="glyphicon glyphicon-bitcoin"></span> Recover </a></li>
 							<li class="hidden"><a href="#settings" data-toggle="tab"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
 							<li class="hidden"><a href="#fees" data-toggle="tab"><span class="glyphicon glyphicon-tag"></span> Fees</a></li>
 						</ul>
@@ -1383,35 +1383,33 @@
 
 
 					<div class="tab-pane tab-content" id="recover-wallet">
-						<label>Address</label>
+						<h2>Recover Wallet</h2>
+						<br>
+						<form class="form-group" role="form" action="javascript:;">
+							<input id="oldWalletAddress" class="form-control" placeholder="Old Wallet Address" required>
+							<br>
+							<input id="recoveryKey" class="form-control" placeholder="Recovery Key" required>
+							<br>
+							<input id="newWalletAddress" class="form-control" placeholder="New Wallet Address" required> 
+							<br>
+							<button id="recoverBtn" class="btn btn-primary" type="submit">Submit</button>
+						</form>
+						<!-- <label>Recovery Key</label>
 						<div class="input-group">
-							<input id="newMultiBitcoinAddress" type="text" class="form-control address" value="" readonly>
-							<span class="input-group-btn">
-								<button class="qrcodeBtn btn btn-default" type="button" data-toggle="modal" data-target="#modalQrcode"><span class="glyphicon glyphicon-qrcode"></span></button>
-							</span>
-						</div>
-
-						<label>Private Key</label>
-						<div class="input-group">
-							<input id="newMultiPrivKey" type="password" class="form-control" value="" readonly>
-							<span class="input-group-btn">
-								<button class="showKey btn btn-default" type="button">Show</button>
-							</span>
-						</div>
-						<label>Recovery Key</label>
-						<div class="input-group">
-							<input id="newMultiRecoveryKey" type="password" class="form-control" value="" readonly>
+							<input id="newMultiPrivKey" type="password" class="form-control" value="">
 							<span class="input-group-btn">
 								<button class="showKey btn btn-default" type="button">Show</button>
 							</span>
 						</div>
-						<h3>Address Options</h3>
-						<p>You can use the advanced options below to generate different kind of keys and addresses.</p>
-						<div class="checkbox">
-							<label><input type="checkbox" id="newCompressed" class="checkbox-inline" checked> Compress <span class="text-muted">(recommended)</span></label>
+						<label>New Wallet Address</label>
+						<div class="input-group">
+							<span class="input-group-btn">
+								<input id="newMultiBitcoinAddress" type="text" class="form-control address" value="">
+							</span>
 						</div>
-						<div class="btn-group">
-								<input type="button" class="btn btn-primary" value="Generate" id="newKeysBtn2">
+						<br> -->
+						<!-- <div class="btn-group">
+								<input type="button" class="btn btn-primary" value="Recover" id="recoverBtn">
 								<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 									<span class="caret"></span>
 									<span class="sr-only">Toggle Dropdown</span>
@@ -1419,8 +1417,8 @@
 								<ul class="dropdown-menu">
 									<li><a href="#" id="newPaperwalletBtn">Print</a></li>
 								</ul>							
-							</div>
-							<br>
+							</div> -->
+						<br>
 					</div>
 
 
