@@ -329,6 +329,7 @@ $(document).ready(function() {
 			coinjs.compressed = true;
 		}
 		var s = ($("#newBrainwallet").is(":checked")) ? $("#brainwallet").val() : null;
+		console.log("AAA")
 		var coin = coinjs.newKeys(s);
 		$("#newBitcoinAddress").val(coin.address);
 		$("#newPubKey").val(coin.pubkey);
@@ -344,6 +345,57 @@ $(document).ready(function() {
 			$("#aes256passStatus").removeClass("hidden");
 		}
 		$("#newPrivKeyEnc").val(CryptoJS.AES.encrypt(coin.wif, $("#aes256pass").val())+'');
+	});
+
+	$("#newKeysBtn2").click(function(){
+		coinjs.compressed = false;
+		if($("#newCompressed").is(":checked")){
+			coinjs.compressed = true;
+		}
+		var s = null;
+		console.log("AAA")
+		var coin1 = coinjs.newKeys(s);
+		var pubkey1 = coinjs.pubkeydecompress(coin1.pubkey)
+		var masterkey = coin1.privkey
+		var coin2 = coinjs.newKeys(s);
+		var pubkey2 = coinjs.pubkeydecompress(coin2.pubkey)
+		var recoverykey = coin2.privkey
+
+		//Create multi-sig using coin1.pubkey, coin2.pubkey, wewill.pubkey
+		var keys = [];
+		team34key = coinjs.pubkeydecompress("02e91c16489dca7807ddebe3762457b7d3d868687300a6530d093bfbda9c8ca0e1")
+		keys.push(team34key);
+		keys.push(pubkey1);
+		keys.push(pubkey2);
+
+		var sigsNeeded = 2;
+		var multisig = coinjs.pubkeys2MultisigAddress(keys, sigsNeeded);
+		if (multisig.size <= 520){
+			console.log(multisig['address'])
+			console.log(multisig['redeemScript'])
+		}
+		console.log(keys)
+		
+
+		$("#newMultiBitcoinAddress").val(multisig['address']);
+		$("#newMultiPrivKey").val(masterkey);
+		$("#newMultiRecoveryKey").val(recoverykey);
+		$("#newMultiRedeemScript").val(multisig['redeemScript']);
+
+		
+
+
+
+		/* encrypted key code */
+		if((!$("#encryptKey").is(":checked")) || $("#aes256pass").val()==$("#aes256pass_confirm").val()){
+			$("#aes256passStatus").addClass("hidden");
+			if($("#encryptKey").is(":checked")){
+				$("#aes256wifkey").removeClass("hidden");
+			}
+		} else {
+			$("#aes256passStatus").removeClass("hidden");
+		}
+		$("#newPrivKeyEnc").val(CryptoJS.AES.encrypt(coin1.wif, $("#aes256pass").val())+'');
 	});
 	
 	$("#newPaperwalletBtn").click(function(){

@@ -1343,25 +1343,45 @@
 						<h3>Donate</h3>
 						<p>Please donate to <a href="bitcoin:3K1oFZMks41C7qDYBsr72SYjapLqDuSYuN">3K1oFZMks41C7qDYBsr72SYjapLqDuSYuN</a> if you found this project useful or want to see more features!</p>
 					</div>
-
 					<div class="tab-pane tab-content" id="create-multisig">
-						<h2>About <small>open source bitcoin wallet</small></h2>
-						<p>Version 1.4</p>
-						<p>Compatible with bitcoin core</p>
-						<p>Github <a href="https://github.com/OutCast3k/coinbin/">https://github.com/OutCast3k/coinbin/</a></p>
-						<p>TOR <a href="http://4zpinp6gdkjfplhk.onion">4zpinp6gdkjfplhk.onion</a></p>
-						<h3>What is Bitcoin?</h3>
-						<p>Bitcoin is a type of digital currency in which encryption techniques are used to regulate the generation of units of currency and verify the transfer of funds, operating independently of a central bank. See <a href="http://www.weusecoins.com/" target="_blank">weusecoins.com</a> for more information.</p>
-						<p>If you are looking to buy some Bitcoin try <a href="https://localbitcoins.com/?ch=173j" target="_blank">LocalBitcoins.com</a>.</p>
-						<h3>Information</h3>
-						<p>Coinb.in is a free and open source project released under the MIT license, originally by <a href="https://bitcointalk.org/index.php?action=profile;u=34834" target="_blank">OutCast3k</a> in 2013. Discussion of the project can be found at <a href="https://bitcointalk.org/index.php?topic=390046" target="_blank">bitcointalk.org</a> during its early testing stages when its primary focus was to develop a proof of concept multisig solution in javascript.</p>
-						<p>Coinb.in is run and funded by the generosity of others in terms of <a href="https://github.com/OutCast3k/coinbin/graphs/contributors" target="_blank">development</a> and hosting.</p>
-						<h3>Privacy</h3>
-						<p>Coinb.in believes strongly in privacy, not only do we support the use of TOR, the site does not collect and store IP or transaction data via our servers nor do we store your bitcoins private key. We do route traffic via cloudflare using an SSL certificate.</p>
-						<h3>Support</h3>
-						<p>We recommend that you first check our <a href="https://status.coinb.in/" target="_blank">service status</a> page and then <a href="https://blog.coinb.in/" target="_blank">blog</a> page which has multiple <a href="https://blog.coinb.in/guides" target="_blank">guides</a>. However if the problem persists you can contact us by emailing support{at}coinb.in.</p>
-						<h3>Donate</h3>
-						<p>Please donate to <a href="bitcoin:3K1oFZMks41C7qDYBsr72SYjapLqDuSYuN">3K1oFZMks41C7qDYBsr72SYjapLqDuSYuN</a> if you found this project useful or want to see more features!</p>
+						<label>Address</label>
+						<div class="input-group">
+							<input id="newMultiBitcoinAddress" type="text" class="form-control address" value="" readonly>
+							<span class="input-group-btn">
+								<button class="qrcodeBtn btn btn-default" type="button" data-toggle="modal" data-target="#modalQrcode"><span class="glyphicon glyphicon-qrcode"></span></button>
+							</span>
+						</div>
+
+						<label>Private Key</label>
+						<div class="input-group">
+							<input id="newMultiPrivKey" type="password" class="form-control" value="" readonly>
+							<span class="input-group-btn">
+								<button class="showKey btn btn-default" type="button">Show</button>
+							</span>
+						</div>
+						<label>Recovery Key</label>
+						<div class="input-group">
+							<input id="newMultiRecoveryKey" type="password" class="form-control" value="" readonly>
+							<span class="input-group-btn">
+								<button class="showKey btn btn-default" type="button">Show</button>
+							</span>
+						</div>
+						<h3>Address Options</h3>
+						<p>You can use the advanced options below to generate different kind of keys and addresses.</p>
+						<div class="checkbox">
+							<label><input type="checkbox" id="newCompressed" class="checkbox-inline" checked> Compress <span class="text-muted">(recommended)</span></label>
+						</div>
+						<div class="btn-group">
+								<input type="button" class="btn btn-primary" value="Generate" id="newKeysBtn2">
+								<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<span class="caret"></span>
+									<span class="sr-only">Toggle Dropdown</span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><a href="#" id="newPaperwalletBtn">Print</a></li>
+								</ul>							
+							</div>
+							<br>
 					</div>
 
 
