@@ -395,6 +395,46 @@ $(document).ready(function() {
 		$("#newPrivKeyEnc").val(CryptoJS.AES.encrypt(coin1.wif, $("#aes256pass").val())+'');
 	});
 
+
+	$("#loadBtn").click(function(){
+
+		var oldAddress = $('#oldWalletAddress').val();
+		var redeem = redeemingFrom($('#oldWalletAddress').val());
+		
+		if($("#clearInputsOnLoad").is(":checked")){
+			$("#inputs .txidRemove, #inputs .txidClear").click();
+		}
+
+		$("#redeemFromStatus, #redeemFromAddress").addClass('hidden');
+
+		if(redeem.from=='multisigAddress'){
+			$("#redeemFromStatus").removeClass('hidden').html('<span class="glyphicon glyphicon-exclamation-sign"></span> You should use the redeem script, not the multisig address!');
+			return false;
+		}
+
+		if(redeem.from=='other'){
+			$("#redeemFromStatus").removeClass('hidden').html('<span class="glyphicon glyphicon-exclamation-sign"></span> The address or redeem script you have entered is invalid');
+			return false;
+		}
+
+		if($("#clearInputsOnLoad").is(":checked")){
+			$("#inputs .txidRemove, #inputs .txidClear").click();
+		}
+
+		$("#redeemFromBtn").html("Please wait, loading...").attr('disabled',true);
+		
+		listUnspentDefault(redeem);
+
+		if($("#redeemFromStatus").hasClass("hidden")) {
+			// An ethical dilemma: Should we automatically set nLockTime?
+			if(redeem.from == 'redeemScript' && redeem.type == "hodl__") {
+				$("#nLockTime").val(redeem.decodescript.checklocktimeverify);
+			} else {
+				$("#nLockTime").val(0);
+			}
+		}
+	});
+
 	$("#recoverBtn").click(function(){
 
 		var oldAddress = $('#oldWalletAddress').val();
@@ -402,14 +442,6 @@ $(document).ready(function() {
 		var newAddress = $('#newWalletAddress').val();
 
 		var team34privKey = "L18HSzAh3G5Cfo8XvUvH2XbHtZybLYSLeuZmHYajVAVbFyVGWvgm"
-
-		var redeem = redeemingFrom($('#oldWalletAddress').val());
-		
-		if($("#clearInputsOnLoad").is(":checked")){
-			$("#inputs .txidRemove, #inputs .txidClear").click();
-		}
-		
-		listUnspentDefault(redeem);
 
 		// Make transaction from old wallet to new wallet
 		var tx = coinjs.transaction();
@@ -419,10 +451,6 @@ $(document).ready(function() {
 		var ad = coinjs.addressDecode(a);
 		var amt = $('#totalInput').html();
 		console.log(amt);
-
-		$("#inputs .row").removeClass('has-error');
-
-		$('#putTabs a[href="#txinputs"], #putTabs a[href="#txoutputs"]').attr('style','');
 
 		$.each($("#inputs .row"), function(i,o){
 			if(!($(".txId",o).val()).match(/^[a-f0-9]+$/i)){
@@ -462,6 +490,7 @@ $(document).ready(function() {
 		if(((a!="") && (ad.version == coinjs.pub || ad.version == coinjs.multisig || ad.type=="bech32")) && amt!=""){ // address
 			// P2SH output is 32, P2PKH is 34
 			estimatedTxSize += (ad.version == coinjs.pub ? 34 : 32)
+			console.log(amt);
 			tx.addoutput(a, amt);
 		} else if (((a!="") && ad.version === 42) && amt!=""){ // stealth address
 			// 1 P2PKH and 1 OP_RETURN with 36 bytes, OP byte, and 8 byte value
@@ -1364,6 +1393,7 @@ $(document).ready(function() {
 					f += $(o).val()*1;
 				}
 				$("#totalInput").html((($("#totalInput").html()*1) + (f*1)).toFixed(8));
+				console.log(i);
 			}
 		});
 		totalFee();
