@@ -538,7 +538,6 @@ $(document).ready(function() {
 		}
 		
 		//Broadcast 2-party Signed Transaction 
-
 		var thisbtn = btn;		
 		$(thisbtn).val('Please wait, loading...').attr('disabled',true);
 		$.ajax ({
