@@ -74,6 +74,7 @@
 							<li><a href="#wallet" data-toggle="tab"><span class="glyphicon glyphicon-briefcase"></span> Wallet</a></li>
 							<li><a href="#about" data-toggle="tab"><span class="glyphicon glyphicon-info-sign"></span> About</a></li>
 							<li><a href="#create-multisig" data-toggle="tab"><span class="glyphicon glyphicon-info-sign"></span> create-multisig</a></li>
+							<li><a href="#recover-wallet" data-toggle="tab"><span class="glyphicon glyphicon-info-sign"></span> recover-wallet</a></li>
 							<li class="hidden"><a href="#settings" data-toggle="tab"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
 							<li class="hidden"><a href="#fees" data-toggle="tab"><span class="glyphicon glyphicon-tag"></span> Fees</a></li>
 						</ul>
@@ -1344,6 +1345,48 @@
 						<p>Please donate to <a href="bitcoin:3K1oFZMks41C7qDYBsr72SYjapLqDuSYuN">3K1oFZMks41C7qDYBsr72SYjapLqDuSYuN</a> if you found this project useful or want to see more features!</p>
 					</div>
 					<div class="tab-pane tab-content" id="create-multisig">
+						<label>Address</label>
+						<div class="input-group">
+							<input id="newMultiBitcoinAddress" type="text" class="form-control address" value="" readonly>
+							<span class="input-group-btn">
+								<button class="qrcodeBtn btn btn-default" type="button" data-toggle="modal" data-target="#modalQrcode"><span class="glyphicon glyphicon-qrcode"></span></button>
+							</span>
+						</div>
+
+						<label>Private Key</label>
+						<div class="input-group">
+							<input id="newMultiPrivKey" type="password" class="form-control" value="" readonly>
+							<span class="input-group-btn">
+								<button class="showKey btn btn-default" type="button">Show</button>
+							</span>
+						</div>
+						<label>Recovery Key</label>
+						<div class="input-group">
+							<input id="newMultiRecoveryKey" type="password" class="form-control" value="" readonly>
+							<span class="input-group-btn">
+								<button class="showKey btn btn-default" type="button">Show</button>
+							</span>
+						</div>
+						<h3>Address Options</h3>
+						<p>You can use the advanced options below to generate different kind of keys and addresses.</p>
+						<div class="checkbox">
+							<label><input type="checkbox" id="newCompressed" class="checkbox-inline" checked> Compress <span class="text-muted">(recommended)</span></label>
+						</div>
+						<div class="btn-group">
+								<input type="button" class="btn btn-primary" value="Generate" id="newKeysBtn2">
+								<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<span class="caret"></span>
+									<span class="sr-only">Toggle Dropdown</span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><a href="#" id="newPaperwalletBtn">Print</a></li>
+								</ul>							
+							</div>
+							<br>
+					</div>
+
+
+					<div class="tab-pane tab-content" id="recover-wallet">
 						<label>Address</label>
 						<div class="input-group">
 							<input id="newMultiBitcoinAddress" type="text" class="form-control address" value="" readonly>
